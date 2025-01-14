@@ -1,5 +1,5 @@
     // ==UserScript==
-    // @name         role management
+    // @name         roleManagement2
     // @namespace    http://tampermonkey.net/
     // @match        https://anidb.net/episode/*
     // @grant        none
