@@ -139,7 +139,12 @@
                         'display': 'flex',
                         'align-items': 'center',
                         'justify-content': 'center'
-                    }
+                    },
+                    comparator: (valueA, valueB, nodeA, nodeB, isDescending) => {
+                        //console.log(valueA, valueB, nodeA, nodeB, isDescending);
+                        if (valueA == valueB) return 0;
+                        return (valueA !== undefined) ? 1 : -1;
+                    },
                 },
                 columnDefs: [{
                     field: "Image",
@@ -172,14 +177,14 @@
                         });
 
                         return img;
-                    }
+                    },
 
                 }, {
                     field: "Name of Character",
                 }, {
-                    field: "Sex"
+                    field: "Sex",
                 }, {
-                    field: "Casting"
+                    field: "Casting",
                 }],
                 rowData: [],
             };
