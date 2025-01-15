@@ -227,20 +227,4 @@
         listOfObjects.push(new Label(characters[i], i, table));
     }
 
-
-    let myStyle = document.createElement("style");
-    myStyle.innerHTML = `
-.highlighted {
-    animation: mymove 8s infinite;
-    animation-timing-function: linear;
-  }
-@keyframes mymove {
-  0% {box-shadow: 0px 0px 0px 2px white;}
-  25% {box-shadow: 0 0 0px 4px black;}
-  50% {box-shadow: 0 0 0px 6px white;}
-  75% {box-shadow: 0 0 0px 8px black;}
-  100% {box-shadow: 0 0 0px 10px white;}
-}`
-    document.head.appendChild(myStyle);
-
 })();
