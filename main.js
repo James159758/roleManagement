@@ -1,9 +1,10 @@
-    // ==UserScript==
-    // @name         roleManagement2
-    // @namespace    http://tampermonkey.net/
-    // @match        https://anidb.net/episode/*
-    // @grant        none
-    // ==/UserScript==
+// ==UserScript==
+// @name         roleManagement
+// @namespace    http://tampermonkey.net/
+// @match        https://anidb.net/episode/*
+// @require      https://cdnjs.cloudflare.com/ajax/libs/ag-grid/33.0.3/ag-grid-community.min.js
+// @grant        none
+// ==/UserScript==
 
   (function() {
     'use strict';
@@ -54,34 +55,47 @@
             return this;
         }
         get name() {
-            return this.element.querySelector("span[itemprop='name']").textContent;
+            return this.element.querySelector("span[itemprop='name']")?.textContent;
+        }
+        get image() {
+            return this.element.querySelector("img")?.src;
+        }
+        get sex(){
+            return this.element.querySelector("div[class='general']")?.innerText.includes("female") ? "female" : "male";
         }
     }
 
 
     class Table {
         constructor() {
-            this.element = document.createElement("table");
             this.memory = new Object();
+
+            this._iframe = document.createElement("iframe");
+            document.body.appendChild(this._iframe);
+
+            this.document = this._iframe.contentWindow.document;
+            this.table = this.document.createElement("div");
+            this.document.body.appendChild(this.table);
+
 
 
             return this;
         }
         config() {
-            this.element.style.setProperty("font-family", "arial, sans-serif");
-            this.element.style.setProperty("border-collapse", "collapse");
-            this.element.style.setProperty("width", "100%");
+            this._iframe.style["width"] = "100%";
+            this._iframe.style["height"] = "100%";
 
 
             return this;
         }
         init() {
-            document.body.appendChild(this.element);
+            (this.element);
 
 
             return this;
         }
         manageData(key, value, flag) {
+            if(key == "") return this;
             if (!this.memory.hasOwnProperty(key)) {
                 this.memory[key] = new Set();
             }
@@ -107,69 +121,82 @@
         }
 
         refreshTable() {
-            this.element.textContent = "";
-            // let cloneOfMemory = structuredClone(this.memory);
-            // Object.keys(cloneOfMemory).forEach((actor) =>{
-            //     cloneOfMemory[actor] = Array.from(cloneOfMemory[actor]);
-            //     cloneOfMemory[actor].sort((a, b) => a - b);
-            // });
+            this.table.textContent = "";
+
+            let gridOptions = {
+                defaultColDef: {
+                    cellStyle: {
+                        'text-align': 'center',
+                        'display': 'flex',
+                        'align-items': 'center',
+                        'justify-content': 'center'
+                    }
+                },
+                columnDefs: [{
+                    field: "Image",
+                    autoHeight: true,
+                    cellRenderer: params => {
+                        if(params.value === undefined) return undefined
+                        const img = document.createElement('img');
+                        img.src = params.value;
+                        img.style.width = '50%';
+                        img.style.height = '50%';
+                        img.addEventListener("mouseenter", function(e){
+                            console.log(e);
+                            let imagePreview = document.createElement("div")
+                            imagePreview.setAttribute("id", "imagepreview");
+                            imagePreview.setAttribute("class", "g_bubble");
+                            imagePreview.setAttribute("style", `top: ${e.pageY}px; left: ${e.pageX+30}px;`);
+
+                            let imgContainer = document.createElement("img");
+                            imgContainer.setAttribute("class", "g_image");
+                            imgContainer.setAttribute("alt", "Image Prevew");
+                            imgContainer.src = e.srcElement.src.replace(".jpg-thumb","");
+                            imagePreview.appendChild(imgContainer);
 
 
-            let boldTR = document.createElement("tr");
-            for (let actor of Object.keys(this.memory)) {
-                let th = document.createElement("th");
-                console.log(actor);
-                th.textContent = actor;
-
-                let namesOfCast = this.memory[actor]
-                th.addEventListener("click", function(){
-                    namesOfCast.forEach((e) =>{
-                        if(e.element.classList.contains("highlighted")){
-                            e.element.classList.remove("highlighted");
-                        } else {
-                            e.element.classList.add("highlighted");
-                            setTimeout(()=>{
-                                if(e.element.classList.contains("highlighted")) e.element.classList.remove("highlighted");
-                            }, 4000);
-                        }
-                    });
-
-
-                });
-
-                boldTR.appendChild(th);
-            }
-            this.element.appendChild(boldTR);
-
-            for (let i = 0; i < this.getMax; i++) {
-                let tr = document.createElement("tr");
-                for (let actor of Object.keys(this.memory)) {
-                    let td = document.createElement("td");
-                    let namesOfCast = Array.from(this.memory[actor]);
-                    namesOfCast.sort((a, b) => a.name - b.name);
-                    td.textContent = undefined;
-                    if(namesOfCast[i] !== undefined){
-                        td.textContent = namesOfCast[i].name;
-                        
-
-                        td.addEventListener("click", function(){
-                            if(namesOfCast[i].element.classList.contains("highlighted")){
-                                namesOfCast[i].element.classList.remove("highlighted");
-                            } else {
-                                namesOfCast[i].element.classList.add("highlighted");
-                                setTimeout(()=>{
-                                    if(namesOfCast[i].element.classList.contains("highlighted")) namesOfCast[i].element.classList.remove("highlighted");
-                                }, 4000);
-                            }
+                            document.body.appendChild(imagePreview);
+                        });
+                        img.addEventListener("mouseout", function(e){
+                            console.log("onmouseout", e);
+                            document.querySelectorAll("#imagepreview").forEach((e) => e?.remove());
                         });
 
-
+                        return img;
                     }
 
-                    tr.appendChild(td);
-                }
-                this.element.appendChild(tr);
+                }, {
+                    field: "Name of Character",
+                }, {
+                    field: "Sex"
+                }, {
+                    field: "Casting"
+                }],
+                rowData: [],
+            };
+
+            for (let nameCasting of Object.keys(this.memory)) {
+                Array.from(this.memory[nameCasting]).forEach((element) => {
+                    let obj = {
+                        "Image": element.image,
+                        "Sex": element.sex,
+                        "Name of Character": element.name,
+                        "Casting": nameCasting,
+                    };
+
+
+
+
+                    gridOptions["rowData"].push(obj);
+                });
+
             }
+
+            console.log(gridOptions)
+
+
+            agGrid.createGrid(this.table, gridOptions);
+
 
 
             return this;
@@ -186,7 +213,6 @@
         }
 
     }
-
 
 
 
