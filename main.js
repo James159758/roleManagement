@@ -6,7 +6,7 @@
 // @grant        none
 // ==/UserScript==
 
-  (function() {
+ (function() {
     'use strict';
 
 
@@ -61,7 +61,16 @@
             return this.element.querySelector("img")?.src;
         }
         get sex(){
-            return this.element.querySelector("div[class='general']")?.innerText.includes("female") ? "female" : "male";
+            let result = undefined;
+            let getSex = this.element.querySelector("div[class='general']")?.innerText;
+            
+            if(getSex.includes("female")){
+                result = "female";
+            } else if(getSex.includes("male")){
+                result = "male";
+            }
+
+            return result;
         }
     }
 
@@ -146,7 +155,7 @@
                             let imagePreview = document.createElement("div")
                             imagePreview.setAttribute("id", "imagepreview");
                             imagePreview.setAttribute("class", "g_bubble");
-                            imagePreview.setAttribute("style", `top: ${e.pageY}px; left: ${e.pageX+30}px;`);
+                            imagePreview.setAttribute("style", `top: ${e.pageY+30}px; left: ${e.pageX+50}px;`);
 
                             let imgContainer = document.createElement("img");
                             imgContainer.setAttribute("class", "g_image");
