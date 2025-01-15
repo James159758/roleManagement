@@ -19,14 +19,15 @@
 
             return this;
         }
-        config() {
+        config() {  
             this.element.setAttribute("type", "text");
+
             this.element.addEventListener("focus", () => this.table.manageData(this.value, this.parent, "remove"));
             this.element.addEventListener("focusout", () => this.table.manageData(this.value, this.parent, "update"));
+
             this.element.style.setProperty("text-align", "center");
             this.element.style.setProperty("font-weight", "bold");
-            this.element.style.setProperty("border", "none");
-            this.element.style.setProperty("border-radius", "0px");
+            this.element.style.setProperty("border-radius", "20px");
 
 
             return this;
