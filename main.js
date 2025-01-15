@@ -1,3 +1,10 @@
+// ==UserScript==
+// @name         roleManagement
+// @namespace    https://github.com/James159758
+// @match        https://anidb.net/episode/*
+// @require      https://cdnjs.cloudflare.com/ajax/libs/ag-grid/33.0.3/ag-grid-community.min.js
+// ==/UserScript==
+
 (function() {
     'use strict';
 
