@@ -1,12 +1,4 @@
-// ==UserScript==
-// @name         roleManagement
-// @namespace    http://tampermonkey.net/
-// @match        https://anidb.net/episode/*
-// @require      https://cdnjs.cloudflare.com/ajax/libs/ag-grid/33.0.3/ag-grid-community.min.js
-// @grant        none
-// ==/UserScript==
-
- (function() {
+(function() {
     'use strict';
 
 
@@ -212,7 +204,6 @@
             agGrid.createGrid(this.table, gridOptions);
 
 
-
             return this;
         }
 
@@ -240,5 +231,4 @@
     for (let i = 0; i < characters.length; i++) {
         listOfObjects.push(new Label(characters[i], i, table));
     }
-
 })();
