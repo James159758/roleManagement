@@ -21,6 +21,7 @@
             }
             config() {
                 this.element.setAttribute("type", "text");
+                this.element.setAttribute("list", "suggestions");
 
                 this.element.addEventListener("focus", () => this.table.manageData(this.value, this.parent, "remove"));
                 this.element.addEventListener("focusout", () => this.table.manageData(this.value, this.parent, "update"));
@@ -28,6 +29,7 @@
                 this.element.style.setProperty("text-align", "center");
                 this.element.style.setProperty("font-weight", "bold");
                 this.element.style.setProperty("border-radius", "20px");
+
 
 
                 return this;
@@ -90,10 +92,16 @@
                 this._iframe = document.createElement("iframe");
                 document.body.appendChild(this._iframe);
 
+
                 this.document = this._iframe.contentWindow.document;
+
+
                 this.table = this.document.createElement("div");
                 this.document.body.appendChild(this.table);
 
+
+                this.dataList = document.createElement("datalist");
+                document.body.appendChild(this.dataList);
 
 
                 return this;
@@ -101,6 +109,8 @@
             config() {
                 this._iframe.style["width"] = "100%";
                 this._iframe.style["height"] = "100%";
+
+                this.dataList.setAttribute("id", "suggestions");
 
 
                 return this;
@@ -130,8 +140,8 @@
                     delete this.memory[key];
                 }
                 console.log(this.memory);
-                console.log(this.getMax);
                 this.refreshTable();
+                this.refreshDataList();
 
 
                 return this;
@@ -147,9 +157,10 @@
                         let keyValue = event.data.hiddenField;
 
                         this.manageData(oldValue, keyValue, "remove");
-                        this.manageData(newValue, keyValue, "update");
                         keyValue.input.changeValue(newValue);
-
+                        if(newValue !== null){
+                            this.manageData(newValue, keyValue, "update");
+                        }
 
                         
 
@@ -163,14 +174,14 @@
                             'justify-content': 'center'
                         },
                         comparator: (valueA, valueB, nodeA, nodeB, isDescending) => {
-                            //console.log(valueA, valueB, nodeA, nodeB, isDescending);
-                            if (valueA == valueB) return 0;
-                            return (valueA !== undefined) ? 1 : -1;
+                            console.log(valueA, valueB, nodeA, nodeB, isDescending);
+                            return (valueA > valueB) ? -1 : 1;
                         },
                     },
                     columnDefs: [{
                         field: "Image",
                         autoHeight: true,
+                        sort: "desc",
                         cellRenderer: params => {
                             if(params.value === undefined) return undefined
                             const img = document.createElement('img');
@@ -243,14 +254,20 @@
                 return this;
             }
 
-            get getMax() {
-                let maxLength = 0;
-                for (let key of Object.keys(this.memory)) {
-                    maxLength = Math.max(maxLength, this.memory[key].size);
+
+
+            refreshDataList(){
+                this.dataList.textContent = "";
+
+                for (let nameCasting of Object.keys(this.memory)) {
+                    const _option = document.createElement("option");
+                    _option.setAttribute("value", nameCasting);
+
+                    this.dataList.appendChild(_option);
                 }
 
 
-                return maxLength;
+                return this;
             }
 
         }
