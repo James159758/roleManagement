@@ -186,9 +186,9 @@
                 }, {
                     field: "Sex",
                 }, {
-                    field: "Casting",
-                }, {
                     field: "Group",
+                }, {
+                    field: "Casting",
                 }],
                 rowData: [],
             };
@@ -199,8 +199,8 @@
                         "Image": element.image,
                         "Sex": element.sex,
                         "Name of Character": element.name,
-                        "Casting": nameCasting,
                         "Group": element.group,
+                        "Casting": nameCasting,
                     };
 
 
