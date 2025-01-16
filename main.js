@@ -2,7 +2,7 @@
 // @name         roleManagement
 // @namespace    https://github.com/James159758
 // @match        https://anidb.net/episode/*
-// @require      https://cdnjs.cloudflare.com/ajax/libs/ag-grid/33.0.3/ag-grid-community.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/ag-grid/33.0.3/ag-grid-community.js
 // ==/UserScript==
 
 (function() {
@@ -19,7 +19,7 @@
 
             return this;
         }
-        config() {  
+        config() {
             this.element.setAttribute("type", "text");
 
             this.element.addEventListener("focus", () => this.table.manageData(this.value, this.parent, "remove"));
@@ -45,16 +45,18 @@
 
 
     class Label {
-        constructor(element, id, table) {
+        constructor(element, id, table, group) {
             this.element = element;
             this.id = id;
             this.table = table;
+            this.group = group;
             this.input = new Input(this, this.id, this.table).config().init();
 
 
             return this;
         }
         get name() {
+            console.log(this.group);
             return this.element.querySelector("span[itemprop='name']")?.textContent;
         }
         get image() {
@@ -63,7 +65,7 @@
         get sex(){
             let result = undefined;
             let getSex = this.element.querySelector("div[class='general']")?.innerText;
-            
+
             if(getSex.includes("female")){
                 result = "female";
             } else if(getSex.includes("male")){
@@ -160,7 +162,7 @@
                             let imagePreview = document.createElement("div")
                             imagePreview.setAttribute("id", "imagepreview");
                             imagePreview.setAttribute("class", "g_bubble");
-                            imagePreview.setAttribute("style", `top: ${e.pageY+30}px; left: ${e.pageX+50}px;`);
+                            imagePreview.setAttribute("style", `top: ${e.screenY-(e.screenY*0.75)}px; left: ${e.screenX+(e.screenX * 0.30)}px;`);
 
                             let imgContainer = document.createElement("img");
                             imgContainer.setAttribute("class", "g_image");
@@ -185,6 +187,8 @@
                     field: "Sex",
                 }, {
                     field: "Casting",
+                }, {
+                    field: "Group",
                 }],
                 rowData: [],
             };
@@ -196,6 +200,7 @@
                         "Sex": element.sex,
                         "Name of Character": element.name,
                         "Casting": nameCasting,
+                        "Group": element.group,
                     };
 
 
@@ -207,7 +212,6 @@
             }
 
             console.log(gridOptions)
-
 
             agGrid.createGrid(this.table, gridOptions);
 
@@ -233,10 +237,23 @@
     let table = new Table()
     table.config().init();
 
-    const characters = document.querySelectorAll("div[id^='charid_'], div[id^='crtid_']");
+    const containerCharacter = document.querySelector("div[class='container ']");
+
+    const groupCharacter = containerCharacter?.querySelectorAll("div[class^='g_section']");
+
+    groupCharacter?.forEach((group) => {
+        console.log(group);
+        const nameOfGroup = group.querySelector("h6")?.textContent;
+        const characters = group.querySelectorAll("div[id^='charid_'], div[id^='crtid_']");
+        for (let i = 0; i < characters.length; i++) {
+            listOfObjects.push(new Label(characters[i], i, table, nameOfGroup));
+        }
+
+    });
 
 
-    for (let i = 0; i < characters.length; i++) {
-        listOfObjects.push(new Label(characters[i], i, table));
-    }
+
+
+
+
 })();
