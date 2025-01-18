@@ -162,7 +162,7 @@
                             this.manageData(newValue, keyValue, "update");
                         }
 
-                        
+
 
 
                     },
@@ -191,7 +191,7 @@
                             img.addEventListener("mouseenter", function(e){
                                 console.log(e);
                                 let imagePreview = document.createElement("div")
-                                imagePreview.setAttribute("id", "imagepreview");    
+                                imagePreview.setAttribute("id", "imagepreview");
                                 imagePreview.setAttribute("class", "g_bubble");
                                 imagePreview.setAttribute("style", `top: ${e.pageY + 30}px; left: ${e.pageX + 50}px;`);
 
